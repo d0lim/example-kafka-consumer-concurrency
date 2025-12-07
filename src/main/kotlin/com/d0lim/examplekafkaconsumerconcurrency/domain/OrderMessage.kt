@@ -13,5 +13,11 @@ data class OrderMessage(
 enum class OrderAction {
     CREATE,
     UPDATE,
-    CANCEL
+    CANCEL;
+
+    fun toStatus(): OrderStatus = when (this) {
+        CREATE -> OrderStatus.CREATED
+        UPDATE -> OrderStatus.UPDATED
+        CANCEL -> OrderStatus.CANCELLED
+    }
 }

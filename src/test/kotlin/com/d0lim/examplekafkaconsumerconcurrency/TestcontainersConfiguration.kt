@@ -1,7 +1,6 @@
 package com.d0lim.examplekafkaconsumerconcurrency
 
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.springframework.context.annotation.Bean
 import org.testcontainers.kafka.KafkaContainer
 import org.testcontainers.mongodb.MongoDBContainer
@@ -27,10 +26,8 @@ class TestcontainersConfiguration {
     }
 
     @Bean
-    @ServiceConnection
     fun kafkaContainer(): KafkaContainer = Companion.kafkaContainer
 
     @Bean
-    @ServiceConnection
     fun mongoDbContainer(): MongoDBContainer = Companion.mongoDBContainer
 }

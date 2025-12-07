@@ -1,6 +1,5 @@
 package com.d0lim.examplekafkaconsumerconcurrency.integration
 
-import com.d0lim.examplekafkaconsumerconcurrency.TestcontainersConfiguration
 import com.d0lim.examplekafkaconsumerconcurrency.config.KafkaConfig
 import com.d0lim.examplekafkaconsumerconcurrency.domain.OrderAction
 import com.d0lim.examplekafkaconsumerconcurrency.domain.OrderMessage
@@ -11,16 +10,43 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
 import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.kafka.KafkaContainer
+import org.testcontainers.mongodb.MongoDBContainer
+import org.testcontainers.utility.DockerImageName
 import java.time.Duration
 import java.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-@Import(TestcontainersConfiguration::class)
 @SpringBootTest
+@Testcontainers
 class KeyOrderingIntegrationTest {
+
+    companion object {
+        @Container
+        @JvmStatic
+        val kafkaContainer: KafkaContainer = KafkaContainer(
+            DockerImageName.parse("apache/kafka-native:latest")
+        )
+
+        @Container
+        @JvmStatic
+        val mongoDBContainer: MongoDBContainer = MongoDBContainer(
+            DockerImageName.parse("mongo:latest")
+        )
+
+        @JvmStatic
+        @DynamicPropertySource
+        fun registerProperties(registry: DynamicPropertyRegistry) {
+            registry.add("spring.kafka.bootstrap-servers") { kafkaContainer.bootstrapServers }
+            registry.add("spring.data.mongodb.uri") { mongoDBContainer.replicaSetUrl }
+        }
+    }
 
     @Autowired
     private lateinit var kafkaTemplate: KafkaTemplate<String, OrderMessage>

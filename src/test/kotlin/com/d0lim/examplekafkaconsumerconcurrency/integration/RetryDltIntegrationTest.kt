@@ -45,7 +45,7 @@ class RetryDltIntegrationTest {
     fun setUp() {
         orderRepository.deleteAll()
         failureSimulator.clear()
-        dltConsumer.clearDltMessages()
+        dltConsumer.clear()
     }
 
     @Test
