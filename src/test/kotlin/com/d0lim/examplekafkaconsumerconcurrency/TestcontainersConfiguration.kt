@@ -10,16 +10,27 @@ import org.testcontainers.utility.DockerImageName
 @TestConfiguration(proxyBeanMethods = false)
 class TestcontainersConfiguration {
 
-    @Bean
-    @ServiceConnection
-    fun kafkaContainer(): KafkaContainer {
-        return KafkaContainer(DockerImageName.parse("apache/kafka-native:latest"))
+    companion object {
+        @JvmStatic
+        val kafkaContainer: KafkaContainer = KafkaContainer(
+            DockerImageName.parse("apache/kafka-native:latest")
+        ).apply {
+            start()
+        }
+
+        @JvmStatic
+        val mongoDBContainer: MongoDBContainer = MongoDBContainer(
+            DockerImageName.parse("mongo:latest")
+        ).apply {
+            start()
+        }
     }
 
     @Bean
     @ServiceConnection
-    fun mongoDbContainer(): MongoDBContainer {
-        return MongoDBContainer(DockerImageName.parse("mongo:latest"))
-    }
+    fun kafkaContainer(): KafkaContainer = Companion.kafkaContainer
 
+    @Bean
+    @ServiceConnection
+    fun mongoDbContainer(): MongoDBContainer = Companion.mongoDBContainer
 }
